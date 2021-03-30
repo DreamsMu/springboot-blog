@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>管理员信息</title>
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_sb6uwdacl0k.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+    <link href="css/animate.css" rel="stylesheet" th:href="@{/css/animate.css}">
+    <link href="css/style.min.css" rel="stylesheet" th:href="@{/css/style.min.css}">
+</head>
+
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <div th:replace="admin/commons/component :: admin_top_bar"></div>
+        <div th:replace="admin/commons/component :: admin_side_bar ('admin')"></div>
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <form method="post">
+                    <label for="name-input">昵称</label>
+                    <input id="name-input" class="form-control" type="text" th:value="${root.getName()}" th:attr="root-id=${root.getId()}">
+                    <label for="username-input">账号</label>
+                    <input id="username-input" class="form-control" type="text" th:value="${root.getUsername()}">
+                    <label for="password-input">密码</label>
+                    <input id="password-input" class="form-control" type="text" th:value="${root.getPassword()}">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="col-lg-12">
+                                <label for="img-input">图片地址</label>
+                                <input id="img-input" class="form-control" type="text" th:value="${root.getImg()}">
+                            </div>
+                            <div class="col-lg-8" style="padding-top: 20px;">
+                                <div class="col-lg-12">
+                                    <input type="file" name="file" id="file"/>
+                                </div>
+                                <div class="col-lg-12" style="padding-top: 20px;">
+                                    <a class="btn btn-brown" id="upload-img">上传图片</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div style="height: 200px; width: 200px; margin-top: 20px; border-radius: 8px; overflow: hidden;">
+                                    <img id="admin-img" th:src="${root.getImg()}" style="max-width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="message-input">个人简介</label><br>
+                            <textarea name="" id="message-input"  th:text="${root.getMessage()}"></textarea>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/lightyear.js" th:src="@{/js/lightyear.js}"></script>
+<script type="text/javascript" src="js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{/js/main.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-notify.min.js" th:src="@{/js/bootstrap-notify.min.js}"></script>
+<script>
+    $(function(){
+        $('#update-admin-btn').click(function(){
+            let id = $('#name-input').attr('root-id')
+            let name = $('#name-input').val()
+            let username = $('#username-input').val()
+            let password = $('#password-input').val()
+            let img = $('#img-input').val()
+            let message = $('#message-input').val()
+            let json = {
+                "id" : id,
+                "name" : name,
+                "username" : username,
+                "password" : password,
+                "img" : img,
+                "message" : message,
+            }
+            console.log(json)
+            $.ajax({
+                url: 'updateAdmin',
+                type: 'POST',
+                data: json,
+                success: function (result) {
+                    if (result.code == 200) {
+                        $("#tagsModel").modal('hide');
+                        lightyear.notify('信息修改成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                        setTimeout(function () {
+                            location.href = "adminAdmin?id="+id;
+                        }, 1000);
+                    } else {
+                        lightyear.notify('信息修改失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    }
+                }
+            })
+
+
+        });
+        $('#upload-img').click(function (){
+            let id = $('#name-input').attr('root-id')
+            var imgOld = $('#img-input').val()
+            var formData = new FormData();
+            formData.append('file', $('#file')[0].files[0])
+            $.ajax({
+                url: 'uploadAdminImg',
+                type: 'POST',
+                data: formData,
+                contentType:false,
+                processData:false,//这个很有必要，不然不行
+                dataType:"json",
+                mimeType:"multipart/form-data",
+                success: function (result){
+                    if (result.code == 200){
+                        $('#admin-img').attr('src',result.realpath)
+                        $('#img-input').val(result.realpath)
+                        lightyear.notify('头像上传成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                        deleteImg(imgOld);
+                        setTimeout(function () {
+                            location.href = "adminAdmin?id="+id;
+                        }, 1000);
+                    }else{
+                        lightyear.notify('头像上传失败', 'danger', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    }
+
+                }
+            })
+        });
+        /*删除旧图片*/
+        function deleteImg(imgOld){
+            $.ajax({
+                url: 'deleteAdminOldImg',
+                type: 'POST',
+                contentType: 'application/json;charset=utf-8',
+                data: imgOld
+            })
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标签</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_rwekflcpia.css">
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="css/tags.css" th:href="@{/css/tags.css}">
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'tags')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'tags')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div>
+                <a href="" th:each="list:${tags}" th:href="@{tagsdetail(id=${list.getId()},page=1)}">
+                    <div class="box_590X1">
+                        <img class="image_58X1" th:src="${list.getImg()}" src="images/img3.png" alt="">
+                        <p class="text_592X1" th:text="${list.getName()}">Typescript</p>
+                        <p class="text_593X1"><span th:text="${list.getTidCount()}"></span> 文章</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+
+        <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+        <script src="js/script.js" th:src="@{/js/script.js}"></script>
+    </div>
+</body>
+</html>

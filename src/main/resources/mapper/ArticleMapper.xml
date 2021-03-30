@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhx.blog.dao.ArticleMapper">
+    <resultMap id="getArticleMap" type="com.mhx.blog.domain.Article">
+        <id  property="id" column="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="description" property="description"/>
+        <result column="author" property="author"/>
+        <result column="rusername" property="rusername"/>
+        <result column="img" property="img"/>
+        <result column="copyright" property="copyright"/>
+        <result column="traffic" property="traffic"/>
+        <result column="cid" property="cid"/>
+        <result column="time" property="time"/>
+        <association property="tags" javaType="com.mhx.blog.domain.Tags">
+            <id  property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+        </association>
+        <association property="category" javaType="com.mhx.blog.domain.Category">
+            <id  property="id" column="c_id"/>
+            <result property="name" column="c_name"/>
+        </association>
+    </resultMap>
+
+    <sql id="BaseSql">
+        SELECT
+            article.*,
+            tags.id t_id,
+            tags.name t_name,
+            category.id c_id,
+            category.name c_name
+        FROM article
+        LEFT JOIN category ON article.cid = category.id
+        LEFT JOIN ActMapTags ON article.id = ActMapTags.aid
+        LEFT JOIN tags ON tags.id = ActMapTags.tid
+    </sql>
+
+    <!-- 获取文章部分 -->
+
+    <select id="getArticle" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        ORDER BY article.time DESC
+    </select>
+
+    <select id="getArticleDesc" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        ORDER BY article.time DESC
+    </select>
+
+    <select id="getArticleByTags" parameterType="Integer" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        WHERE tags.id = #{id} ORDER BY article.time DESC
+    </select>
+
+    <select id="getArticleByCategory" parameterType="Integer" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        WHERE category.id = #{id} ORDER BY article.time DESC
+    </select>
+
+    <select id="getArticleByCategoryNew" parameterType="Integer" resultType="Integer">
+        SELECT article.id FROM article,category WHERE article.cid = category.id AND category.id = #{id}
+    </select>
+
+    <select id="getArticleById" parameterType="Integer" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        WHERE article.id = #{id} ORDER BY article.time DESC
+    </select>
+
+    <select id="getUpArticle" parameterType="Integer" resultType="com.mhx.blog.domain.Article">
+        SELECT * FROM `article` WHERE `id` > #{id} ORDER BY `id` ASC LIMIT 1
+    </select>
+
+    <select id="getDownArticle" parameterType="Integer" resultType="com.mhx.blog.domain.Article">
+        SELECT * FROM `article` WHERE `id` &lt; #{id} ORDER BY `id` DESC LIMIT 1
+    </select>
+
+    <!-- 获取分类信息 -->
+
+    <select id="getCategory" resultType="com.mhx.blog.domain.Category">
+        SELECT * FROM category
+    </select>
+
+    <!-- 获取标签信息 -->
+
+    <select id="getTags" resultType="com.mhx.blog.domain.Tags">
+        SELECT tags.*,COUNT(ActMapTags.tid) as tidCount FROM tags,ActMapTags WHERE ActMapTags.tid = tags.id GROUP BY ActMapTags.tid
+    </select>
+
+    <select id="getTagsList" resultType="com.mhx.blog.domain.Tags">
+        SELECT * FROM tags
+    </select>
+
+    <select id="getTagsById" parameterType="Integer" resultType="com.mhx.blog.domain.Tags">
+        SELECT * FROM tags WHERE id = #{id}
+    </select>
+
+    <!-- 计数部分 -->
+
+    <select id="getArticleCount" resultType="Integer">
+        SELECT COUNT(*) FROM `article`
+    </select>
+
+    <select id="getTagsCount" resultType="Integer">
+        SELECT count(*) FROM tags
+    </select>
+
+    <select id="getCategoryCount" resultType="Integer">
+        SELECT COUNT(*) FROM category
+    </select>
+
+    <!-- 操作数据 -->
+
+    <update id="setTraffic" parameterType="com.mhx.blog.domain.Article">
+        UPDATE `article` SET `traffic` = #{traffic} WHERE `id` = #{id}
+    </update>
+
+    <update id="updateArticleById" parameterType="com.mhx.blog.domain.Article">
+        UPDATE
+            `article`
+        SET
+            title = #{title},
+            author = #{author},
+            description = #{description},
+            img = #{img},
+            copyright = #{copyright},
+            cid = #{category.id}
+        WHERE
+            `id` = #{id}
+    </update>
+
+    <insert id="insertCategory" parameterType="com.mhx.blog.domain.Category">
+        INSERT INTO `category`(`name`) VALUES (#{name})
+    </insert>
+
+    <insert id="insertTags" parameterType="com.mhx.blog.domain.Tags">
+        INSERT INTO `tags` (`name`) VALUES (#{name})
+    </insert>
+
+    <select id="selectCategoryIdByName" parameterType="String" resultType="Integer">
+        SELECT id FROM category WHERE name = #{name}
+    </select>
+
+    <select id="selectTagsIdByName" parameterType="String" resultType="Integer" >
+        SELECT id FROM tags WHERE name = #{name}
+    </select>
+
+    <update id="updateArticleTagsMap" parameterType="com.mhx.blog.domain.ArticleTagsMap">
+        UPDATE
+            `ActMapTags`
+        SET
+            tid = #{tid}
+        WHERE
+            aid = #{aid}
+    </update>
+
+    <select id="selectArticleTagsMap" parameterType="Integer" resultType="Integer">
+        SELECT `tid` FROM `ActMapTags` WHERE `aid` = #{aid}
+    </select>
+
+    <insert id="insertArticleTagsMap" parameterType="com.mhx.blog.domain.ArticleTagsMap">
+        INSERT INTO `ActMapTags` (`aid`, `tid`) VALUES (#{aid},#{tid})
+    </insert>
+
+    <update id="updateArticleContentById" parameterType="com.mhx.blog.domain.Article">
+        UPDATE `article`
+        SET `content` = #{content}
+        WHERE `id` = #{id}
+    </update>
+
+    <delete id="deleteArticleById" parameterType="Integer">
+        DELETE FROM `article` WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteCategoryById" parameterType="Integer">
+         DELETE FROM `category` WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteTagsById" parameterType="Integer">
+         DELETE FROM `tags` WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteArticleTagsMapById" parameterType="Integer">
+         DELETE FROM `ActMapTags` WHERE aid = #{aid}
+    </delete>
+
+    <select id="selectCategroyById" parameterType="Integer" resultType="com.mhx.blog.domain.Category">
+        SELECT * FROM `category` WHERE id = #{id}
+    </select>
+
+    <select id="selectArticleTagsMapAll" resultType="com.mhx.blog.domain.ArticleTagsMap">
+        SELECT * FROM `ActMapTags`
+    </select>
+
+    <insert id="insertArticle" parameterType="com.mhx.blog.domain.Article">
+        INSERT INTO `article` (`title`,`description`,`author`,`img`,`copyright`,`cid`,`rusername`)
+        VALUES (#{title},#{description},#{author},#{img},#{copyright},#{category.id},#{rusername})
+    </insert>
+
+    <select id="selectArticleByName" parameterType="String" resultType="com.mhx.blog.domain.Article">
+        SELECT * FROM `article` WHERE `title` = #{title}
+    </select>
+
+    <select id="selectLikeArticleByTitle" parameterType="String" resultMap="getArticleMap">
+        <include refid="BaseSql"/>
+        WHERE article.title LIKE '%' #{title} '%'
+    </select>
+
+    <insert id="updateTagsById" parameterType="Tags">
+        UPDATE `tags` SET name = #{name}, img = #{img} WHERE id = #{id}
+    </insert>
+
+    <update id="updateAbout" parameterType="String">
+        UPDATE `about` SET content = #{content} WHERE id = 1
+    </update>
+
+    <select id="selectAbout" resultType="String">
+        SELECT content FROM about WHERE id = 1
+    </select>
+
+    <update id="updateAdmin" parameterType="com.mhx.blog.domain.Root">
+        update
+            `root`
+        set
+            `name` = #{name},
+            `username` = #{username},
+            `password` = #{password},
+            `img` = #{img},
+            `message` = #{message}
+        where
+            `id` = #{id}
+    </update>
+
+    <select id="selectRootById" parameterType="Integer" resultType="com.mhx.blog.domain.Root">
+        select * from root where id = #{id}
+    </select>
+
+    <update id="updateAdminImg" parameterType="com.mhx.blog.domain.Root">
+        update `root`
+        set `img` = #{img}
+        where `id` = #{id}
+    </update>
+
+    <update id="updateTagsImg" parameterType="com.mhx.blog.domain.Tags">
+        update `tags`
+        set `img` = #{img}
+        where `id` = #{id}
+    </update>
+
+    <select id="selectRootByName" parameterType="String" resultType="com.mhx.blog.domain.Root">
+        select * from root where username = #{username}
+    </select>
+</mapper>

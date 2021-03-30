@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>正文编辑</title>
+  <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_sb6uwdacl0k.css">
+  <link href="css/bootstrap.min.css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link href="css/materialdesignicons.min.css" rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+  <link href="css/animate.css" rel="stylesheet" th:href="@{/css/animate.css}">
+  <link href="css/style.min.css" rel="stylesheet" th:href="@{/css/style.min.css}">
+  <link rel="stylesheet" href="editormd/css/editormd.css" th:href="@{/editormd/css/editormd.css}"/>
+<style>
+    .editormd-toolbar .divider {
+        width: 0;
+    }
+
+    .editormd-toolbar li:nth-child(38){
+        display: none;
+    }
+</style>
+</head>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <div th:replace="admin/commons/component :: admin_top_bar"></div>
+    <div th:replace="admin/commons/component :: admin_side_bar ('article_edit')"></div>
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid" style="padding: 0;">
+        <div id="test-editor">
+            <textarea id="markdown_text" style="display:none;"
+                      th:attr="article_id=${article.getId()}" th:text="${article.getContent()}"></textarea>
+        </div>
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/lightyear.js" th:src="@{/js/lightyear.js}"></script>
+<script type="text/javascript" src="js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{/js/main.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-notify.min.js" th:src="@{/js/bootstrap-notify.min.js}"></script>
+<script type="text/javascript" src="editormd/editormd.min.js" th:src="@{/editormd/editormd.min.js}"></script>
+<script type="text/javascript">
+    $(function() {
+        var editor = editormd("test-editor", {
+            width  : "1680",
+            height : "825",
+            path   : "editormd/lib/"
+        });
+
+
+    });
+    $(document).ready(function(){
+          $('#save-btn').click(function(){
+              let id = $('#markdown_text').attr('article_id')
+              let text = $('#markdown_text').val()
+              let json = {
+                  "id" : id,
+                  "content" : text
+              }
+              $.ajax({
+                  url:"saveContent",
+                  type: "POST",
+                  contentType: 'application/json;charset=utf-8',
+                  data: JSON.stringify(json),
+                  success: function (result) {
+                      if (result.code == 200) {
+                          lightyear.notify('文章修改成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                      }else {
+                          lightyear.notify('文章修改失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                      }
+                  }
+              });
+          })
+    })
+</script>
+</body>
+</html>

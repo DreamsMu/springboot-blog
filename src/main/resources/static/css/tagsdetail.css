@@ -1,0 +1,16 @@
+.text_741X1{
+    height: 50px;
+    line-height: 50px;
+	color: rgba(80, 80, 80, 1);
+	background-color: rgba(255, 255, 255, 1);
+	border-radius: 6px;
+	font-size: 14px;
+    text-align: center;
+    margin: 13px 0 0 16px;
+}
+
+@media (max-width: 700px) {
+	.text_741X1 {
+		margin-left: 0;
+	}
+}

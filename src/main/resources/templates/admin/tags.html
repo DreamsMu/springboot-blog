@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>标签管理</title>
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_sb6uwdacl0k.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" href="js/jconfirm/jquery-confirm.min.css" th:href="@{/js/jconfirm/jquery-confirm.min.css}">
+    <link href="css/animate.css" rel="stylesheet" th:href="@{/css/animate.css}">
+    <link href="css/style.min.css" rel="stylesheet" th:href="@{/css/style.min.css}">
+    <style>
+        .tags {
+            cursor: pointer;
+        }
+        .box-tags {
+            border-radius: 6px;
+            padding-top: 20px;
+            background-color: #fff;
+        }
+        .box-tags div{
+            width: 200px;
+            height: 200px;
+            margin: auto;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .box-tags div img {
+            max-width: 100%;
+        }
+        .box-tags p{
+            font-weight: 700;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <div th:replace="admin/commons/component :: admin_top_bar"></div>
+        <div th:replace="admin/commons/component :: admin_side_bar ('tags')"></div>
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-6 col-lg-3" th:each="list:${tags}">
+                        <div class="box-tags tags" th:attr="tags-id=${list.getId()}">
+                            <div>
+                                <img th:src="${list.getImg()}" alt="点击编辑">
+                            </div>
+                            <p th:text="${list.getName()}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="tagsModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">编辑标签信息</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post">
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        <h5>标签名</h5>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <input class="form-control" type="text" id="tag-name">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <h5>图片路径</h5>
+                                        <input type="file" id="file" name="file"><br/>
+                                        <a class="btn btn-warning" id="upload-file">上传</a>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div style="width: 150px; height: 150px; overflow: hidden;">
+                                            <img style="max-width: 100%;" id="tag-img" alt="未上传图片">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="submit" class="btn btn-primary" id="save-btn">点击保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/lightyear.js" th:src="@{/js/lightyear.js}"></script>
+<script type="text/javascript" src="js/jconfirm/jquery-confirm.min.js" th:src="@{/js/jconfirm/jquery-confirm.min.js}"></script>
+<script type="text/javascript" src="js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{/js/main.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-notify.min.js" th:src="@{/js/bootstrap-notify.min.js}"></script>
+<script>
+    $(function(){
+        /*标签点击事件，获取信息，弹出模态框*/
+        $('.tags').click(function (){
+            let tagsId = $(this).attr('tags-id')
+            tagsById(tagsId)
+            $('#tagsModel').modal({
+                backdrop: "static"
+            });
+            $('#save-btn').attr('save-id',tagsId)
+            $('#upload-file').attr('upload-id',tagsId)
+        });
+        /*根据id获取标签信息*/
+        function tagsById(id){
+            // reset_form("#tagsModal form");
+            $.ajax({
+                url:'getTagsById?id=' + id,
+                type: "GET",
+                success: function(result){
+                    if (result.name != null) $('#tag-name').val(result.name)
+                    if (result.img != null) $('#tag-img').attr('src',result.img)
+                }
+            })
+        }
+        /*上传按钮点击事件*/
+        $('#upload-file').click(function (){
+            let id = $(this).attr('upload-id')
+            let oldImg = $('#tag-img').attr('src')
+            var formData = new FormData();
+            console.log(formData)
+            formData.append('file', $('#file')[0].files[0])
+            console.log(formData)
+            $.ajax({
+                url: 'uploadTagsImg',
+                type: 'POST',
+                data: formData,
+                contentType:false,
+                processData:false,//这个很有必要，不然不行
+                dataType:"json",
+                mimeType:"multipart/form-data",
+                success: function (result){
+                    if (result.code == 200){
+                        $('#tag-img').attr('src',result.realpath)
+                        updateTagsImg(id,result.realpath)
+                        deleteImg(oldImg)
+                        lightyear.notify('信息修改成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    }else{
+                        lightyear.notify('信息修改失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    }
+                }
+            })
+        });
+        /*保存按钮点击事件*/
+        $('#save-btn').click(function (){
+            // clean_form("#tagsModal form");
+            let id = $(this).attr('save-id')
+            let name = $('#tag-name').val()
+            let img = $('#tag-img').attr('src')
+            let json = {
+                "id" : id,
+                "name" : name,
+                "img" : img
+            }
+            $.ajax({
+                url: 'updateTags',
+                type: 'PUT',
+                contentType: 'application/json;charset=utf-8',
+                data: JSON.stringify(json),
+                success: function (result) {
+                    if (result.code == 200) {
+                        $("#tagsModel").modal('hide');
+                        lightyear.notify('信息修改成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                        setTimeout(function () {
+                            location.href = "adminTags";
+                        }, 1000);
+                    } else {
+                        lightyear.notify('信息修改失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    }
+                }
+            })
+
+        });
+
+        function updateTagsImg(id,img){
+            let json = {
+                "id":id,
+                "img":img
+            }
+            $.ajax({
+                url: 'updateTagsImg',
+                type: 'POST',
+                contentType: 'application/json;charset=utf-8',
+                data: JSON.stringify(json)
+            })
+        }
+
+        function deleteImg(oldImg){
+            $.ajax({
+                url: 'deleteTagsOldImg',
+                type: 'POST',
+                contentType: 'application/json;charset=utf-8',
+                data: oldImg
+            })
+        }
+
+        //清空表单样式及内容
+        function reset_form(ele) {
+            $(ele)[0].reset();
+            //清空表单样式
+            $(ele).find("*").removeClass("has-error has-success");
+            $(ele).find(".help-block").text("");
+        }
+        //清空表单样式
+        function clean_form(ele) {
+            //清空表单样式
+            $(ele).find("*").removeClass("has-error has-success");
+            $(ele).find(".help-block").text("");
+        }
+        //显示校验结果的提示信息
+        function show_validate_msg(ele, status, msg) {
+            //清除当前元素的校验状态
+            $(ele).parent().removeClass("has-success has-error");
+            $(ele).next("span").text("");
+            if ("success" === status) {
+                $(ele).parent().addClass("has-success");
+                $(ele).next("span").text(msg);
+            } else if ("error" === status) {
+                $(ele).parent().addClass("has-error");
+                $(ele).next("span").text(msg);
+            }
+        }
+    })
+</script>
+</body>
+</html>

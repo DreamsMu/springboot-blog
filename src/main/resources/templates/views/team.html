@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_k6z9cmmw53.css">
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="css/team.css" th:href="@{/css/team.css}">
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'team')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'team')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div class="box_755X1">
+                <h1 class="text_756X1">团队介绍</h1>
+                <p class="text_757X1">
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                    介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队介绍团队
+                </p>
+            </div>
+            <div class="box_758X1">
+                <div class="image_101X1">
+                    <img src="images/img4.jpeg" alt="">
+                </div>
+                <div class="text_102X2">
+                    <ul>
+                        <li>前端</li>
+                        <li>Node.js</li>
+                        <li>小程序</li>
+                        <li>java</li>
+                    </ul>
+                </div>
+                <a href="#" class="text_761X1">进入ta的个人主页</a>
+                <a href="#" class="text_761X1">进入ta的GitHub</a>
+            </div>
+            <div class="box_758X1">
+                <div class="image_101X1">
+                    <img src="images/img5.jpeg" alt="">
+                </div>
+                <div class="text_102X2">
+                    <ul>
+                        <li>前端</li>
+                        <li>Node.js</li>
+                        <li>小程序</li>
+                        <li>java</li>
+                    </ul>
+                </div>
+                <a href="#" class="text_761X1">进入ta的个人主页</a>
+                <a href="#" class="text_761X1">进入ta的GitHub</a>
+            </div>
+            <div class="box_758X1">
+                <div class="image_101X1">
+                    <img src="images/img7.jpg" alt="">
+                </div>
+                <div class="text_102X2">
+                    <ul>
+                        <li>前端</li>
+                        <li>Node.js</li>
+                        <li>小程序</li>
+                        <li>java</li>
+                    </ul>
+                </div>
+                <a href="#" class="text_761X1">进入ta的个人主页</a>
+                <a href="#" class="text_761X1">进入ta的GitHub</a>
+            </div>
+        </div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+
+        <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+        <script src="js/script.js" th:src="@{/js/script.js}"></script>
+    </div>
+</body>
+</html>

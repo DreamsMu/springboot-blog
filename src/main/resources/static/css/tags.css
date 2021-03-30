@@ -1,0 +1,42 @@
+.box_590X1{
+	width: 200px;
+    height: 148px;
+    display: inline-block;
+	color: rgba(80, 80, 80, 1);
+	background-color: rgba(255, 255, 255, 1);
+	border-radius: 6px;
+	font-size: 14px;
+	line-height: 150%;
+    text-align: center;
+    margin: 18px 0 18px 18px;
+    /* border: 1px solid red; */
+}
+
+.image_58X1{
+	width: 37px;
+    height: 37px;
+    margin-top: 25px;
+}
+
+.text_592X1{
+	width: 68px;
+	height: 21px;
+	color: rgba(80, 80, 80, 1);
+	font-size: 14px;
+	line-height: 150%;
+    margin: 5px auto;
+}
+
+.text_593X1{
+	width: 75px;
+	height: 21px;
+	color: rgba(80, 80, 80, 1);
+	font-size: 14px;
+	line-height: 150%;
+    margin: auto;
+}
+@media (max-width: 700px) {
+	.box_right div {
+		text-align: center;
+	}
+}

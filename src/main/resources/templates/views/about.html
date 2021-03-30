@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_k6z9cmmw53.css">
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="css/sspai.css" th:href="@{/css/sspai.css}">
+    <link rel="stylesheet" href="css/about.css" th:href="@{/css/about.css}">
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'about')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'about')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div class="box_863X1">
+                <h1 class="text_863T1">关于</h1>
+                <textarea id="markText" th:text="${about}" style="display: none"></textarea>
+                <div class="text_863T2 markdown" id="markdown"></div>
+            </div>
+        </div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+
+        <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+        <script src="js/showdown.min.js" th:src="@{/js/showdown.min.js}"></script>
+        <script src="js/script.js" th:src="@{/js/script.js}"></script>
+        <script>
+            $(document).ready(function() {
+                let text = $('#markText').val()
+                let converter = new showdown.Converter({
+                    tables: true,
+                    tasklists: true
+                });
+                let html = converter.makeHtml(text);
+                document.getElementById('markdown').innerHTML = html;
+            });
+        </script>
+    </div>
+</body>
+</html>

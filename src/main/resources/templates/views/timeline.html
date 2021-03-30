@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>档案</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_k6z9cmmw53.css">
+    <link rel="stylesheet" href="css/style.css"  th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="css/timeline.css" th:href="@{/css/timeline.css}">
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'timeline')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'timeline')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div class="timeline">
+                <div class="time_year">
+                    <div th:each="list:${article}">
+<!--                        <div class="time">-->
+<!--                            <p th:text="${#dates.format(list.getTime(), 'yyyy')}">2019</p>-->
+<!--                        </div>-->
+                        <div class="time_text">
+                            <span class="text_512X1" th:text="${#dates.format(list.getTime(), 'yyyy')}">FEB</span>
+                            <span class="box_521X1">-</span>
+                            <span class="text_519X1" th:text="${#dates.format(list.getTime(), 'MM-dd')}">02-01</span>
+                            <span class="text_517X1" th:text="${list.getTitle()}">文章标题</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+    </div>
+    <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="js/script.js" th:src="@{/js/script.js}"></script>
+</body>
+</html>

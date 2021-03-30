@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${article.getTitle()}"></title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_i8vpknl2nkb.css">
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="css/sspai.css" th:href="@{/css/sspai.css}">
+    <link rel="stylesheet" href="css/acticle.css" th:href="@{/css/acticle.css}">
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'home')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'home')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div class="article"> 
+                <div class="box_388">
+                    <h1 class="text_388X1" th:text="${article.getTitle()}"></h1>
+                </div>
+                <div class="text_740">
+                    <div class="image_95X1">
+                        <img th:src="${root.getImg()}" alt="">
+                    </div>
+                    <span class="text_725X1 margin-left10" th:text="${article.getAuthor()}">Array</span>
+                    <span class="text_725X1" th:text="${article.getCopyright()}" style="color: #e33c64;">原创</span>
+                    <span class="text_725X1" style="color: rgba(255, 141, 26, 1);">阅读:<span th:text="${article.getTraffic()}+1"></span></span>
+                    <span class="text_725X1" th:if="${article?.getTags()?.getName()} != null" th:text="${article?.getTags()?.getName()}" style="color: rgba(67, 207, 124, 1);">JavaScript</span>
+                    <span class="text_725X1" th:text="${#dates.format(article.getTime(), 'yyyy-MM-dd HH:mm:ss')}" style="color: rgba(121, 72, 234, 1);">Oct 13, 2019</span>
+                </div>
+                <textarea id="markText" th:text="${article.getContent()}" style="display: none"></textarea>
+                <div class="text_393X1 markdown" id="markdown"></div>
+                <div class="icon_box">
+                    <a href="#" th:href="@{article(id=${upArticle.getId()})}" th:if="${upArticle.getId() != -1}" class="text_436X1 ileft"><i class="icon_7X1 iconfont iconshangyipian2"></i>上一篇文章：<span th:text="${upArticle.getTitle()}"></span></a>
+                    <a href="#" th:href="@{article(id=${downArticle.getId()})}" th:if="${downArticle.getId() != -2}" class="text_436X1 iright"> <span th:text="${downArticle.getTitle()}"></span>：下一篇文章<i class="icon_7X1 iconfont iconxiayipian2"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+        <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+        <script src="js/showdown.min.js" th:src="@{/js/showdown.min.js}"></script>
+        <script src="js/script.js" th:src="@{/js/script.js}"></script>
+        <script>
+            $(document).ready(function() {
+                let text = $('#markText').val()
+                let converter = new showdown.Converter({
+                    tables: true,
+                    tasklists: true
+                });
+                let html = converter.makeHtml(text);
+                document.getElementById('markdown').innerHTML = html;
+            });
+        </script>
+    </div>
+</body>
+</html>

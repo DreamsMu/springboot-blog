@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>文章管理</title>
+    <link rel="icon" href="favicon.png" th:href="@{/favicon.png}">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_sb6uwdacl0k.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet" th:href="@{/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" href="js/jconfirm/jquery-confirm.min.css" th:href="@{/js/jconfirm/jquery-confirm.min.css}">
+    <link href="css/animate.css" rel="stylesheet" th:href="@{/css/animate.css}">
+    <link href="css/style.min.css" rel="stylesheet" th:href="@{/css/style.min.css}">
+<style>
+    .new-disable{
+        pointer-events: none;
+    }
+</style>
+</head>
+  
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+      <div th:replace="admin/commons/component :: admin_top_bar"></div>
+      <div th:replace="admin/commons/component :: admin_side_bar ('article')"></div>
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+        <div class="container-fluid">
+            <form class="form-horizontal" style="margin-bottom: 15px;" action="" method="post" onsubmit="return false;">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-xs-10">
+                        <input class="form-control" type="text" id="idSearch" name="example-text-input" placeholder="请输入关键字..">  
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-xs-1">
+                        <button class="btn btn-success btn-w-xs" id="search-btn" type="submit">搜索</button>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-xs-2 col-lg-offset-6 col-md-offset-3">
+                        <button type="button" id="add-base" class="btn btn-success btn-md">
+                            新建
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>文章列表</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>文章标题</th>
+                                            <th>作者</th>
+                                            <th>创建日期</th>
+                                            <th>标签</th>
+                                            <th>分类</th>
+                                            <th>来源</th>
+                                            <th>访问量</th>
+                                            <th>修改操作</th>
+                                            <th>删除操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="list:${article.getList()}">
+                                            <td th:text="${(article.pageNum - 1) * article.pageSize+listStat.index+1}">1</td>
+                                            <td th:text="${list.getTitle()}">文章标题</td>
+                                            <td th:text="${list.getAuthor()}">作者</td>
+                                            <td th:text="${#dates.format(list.getTime(), 'yyyy/MM/dd')}">2020/08/06</td>
+                                            <td th:text="${list?.getTags()?.getName()}">javascript</td>
+                                            <td th:text="${list.getCategory().getName()}">前端</td>
+                                            <td><span class="label label-success" th:class="${list.getCopyright() == '原创'? 'label label-success':'label label-warning'}" th:text="${list.getCopyright()}">原创</span></td>
+                                            <td th:text="${list.getTraffic()}">201245</td>
+                                            <td>
+                                                <button class="btn btn-cyan" id="edit-base" th:attr="edit-base-id=${list.getId()}">
+                                                    基本信息
+                                                </button>
+                                                <a href="article_edit.html" th:href="@{adminArticle_edit(id=${list.getId()})}" class="btn btn-brown" type="button">编辑正文</a>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-danger" id="delete-btn" th:attr="delete-id=${list.getId()},delete-name=${list.getTitle()}" type="button">删除</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- 修改用户模态框 -->
+                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+                                    <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                          <h4 class="modal-title">基本信息</h4>
+                                        </div>
+                                        <div class="modal-body">
+
+                                          <form method="post">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <h5>标题</h5>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <input type="text" id="edit_id_input" style="display: none;">
+                                                    <input class="form-control" type="text" name="title" id="title_edit_input">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <h5>作者</h5>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <div class="col-lg-4"><h5>标签</h5></div>
+                                                    <div class="col-lg-4"><h5>分类</h5></div>
+                                                    <div class="col-lg-4"><h5>版权</h5></div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <input type="text" id="edit_author_username" style="display: none;">
+                                                    <input class="form-control" name="author" type="text" id="author_edit_input">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <div class="col-lg-4">
+                                                        <div class="btn-group open" id="tags_edit_input_parent">
+                                                            <input type="text" style="display: none" id="tags_id_edit_input">
+                                                            <input style="width: 70px; float: left;" name="tagsName" class="form-control" type="text" id="tags_edit_input">
+                                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <span class="caret"></span>
+                                                                <span class="sr-only">切换下拉列表</span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li th:each="list:${tags}">
+                                                                    <a class="dropdown_tags"
+                                                                       th:attr="dropdown_tags_id=${list.getId()},dropdown_tags_name=${list.getName()}"
+                                                                       th:text="${list.getName()}"></a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="btn-group open" id="category_edit_input_parent">
+                                                            <input type="text" style="display: none" id="category_id_edit_input">
+                                                            <input style="width: 70px; float: left;" name="categoryName" class="form-control" type="text" id="category_edit_input">
+                                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <span class="caret"></span>
+                                                                <span class="sr-only">切换下拉列表</span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li th:each="list:${category}">
+                                                                    <a class="dropdown_category"
+                                                                       th:attr="dropdown_category_id=${list.getId()},dropdown_category_name=${list.getName()}"
+                                                                       th:text="${list.getName()}"></a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-lg-4">
+                                                        <div class="btn-group open" id="copyright_edit_input_parent">
+                                                            <input style="width: 70px; float: left;" name="copyright" class="form-control" type="text" id="copyright_edit_input">
+                                                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <span class="caret"></span>
+                                                                <span class="sr-only">切换下拉列表</span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown_copyright">原创</a></li>
+                                                                <li><a class="dropdown_copyright">转载</a></li>
+                                                            </ul>
+                                                        </div>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                              <div class="row">
+                                                  <div class="col-lg-6">
+                                                      <h5>图片路径</h5>
+                                                      <input type="file" id="file" name="file"><br/>
+                                                      <a class="btn btn-warning" id="upload_file">上传</a>
+                                                  </div>
+                                                  <div class="col-lg-6">
+                                                      <div style="width: 150px; height: 150px; overflow: hidden;">
+                                                          <img style="max-width: 100%;" id="img_edit_input" alt="未上传图片">
+                                                      </div>
+                                                  </div>
+                                              </div>
+
+                                            <h5>简介</h5>
+                                            <textarea id="description_edit_textarea" name="description" cols="63" rows="10"></textarea>
+                                          </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                          <button type="submit" class="btn btn-primary" id="save-btn">点击保存</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                <!-- 添加用户模态框 -->
+                                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                <h4 class="modal-title">基本信息</h4>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <form method="post">
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <h5>标题</h5>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <input type="text" id="add_id_input" style="display: none;">
+                                                            <input class="form-control" type="text" name="title" id="title_add_input">
+                                                            <span class="help-block"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <h5>作者</h5>
+                                                        </div>
+                                                        <div class="col-lg-9">
+                                                            <div class="col-lg-4"><h5>标签</h5></div>
+                                                            <div class="col-lg-4"><h5>分类</h5></div>
+                                                            <div class="col-lg-4"><h5>版权</h5></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-3">
+                                                            <input type="text" value="1" id="add_author_username" style="display: none;">
+                                                            <input class="form-control" th:value="${root.getName()}" name="author" type="text" id="author_add_input">
+                                                            <span class="help-block"></span>
+                                                        </div>
+                                                        <div class="col-lg-9">
+                                                            <div class="col-lg-4">
+                                                                <div class="btn-group open" id="tags_add_input_parent">
+                                                                    <input type="text" style="display: none" id="tags_id_add_input">
+                                                                    <input style="width: 70px; float: left;" name="tagsName" class="form-control" type="text" id="tags_add_input">
+                                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <span class="caret"></span>
+                                                                        <span class="sr-only">切换下拉列表</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li th:each="list:${tags}">
+                                                                            <a class="dropdown_tags"
+                                                                               th:attr="dropdown_tags_id=${list.getId()},dropdown_tags_name=${list.getName()}"
+                                                                               th:text="${list.getName()}"></a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                <span class="help-block"></span>
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <div class="btn-group open" id="category_add_input_parent">
+                                                                    <input type="text" style="display: none" id="category_id_add_input">
+                                                                    <input style="width: 70px; float: left;" name="categoryName" class="form-control" type="text" id="category_add_input">
+                                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <span class="caret"></span>
+                                                                        <span class="sr-only">切换下拉列表</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li th:each="list:${category}">
+                                                                            <a class="dropdown_category"
+                                                                               th:attr="dropdown_category_id=${list.getId()},dropdown_category_name=${list.getName()}"
+                                                                               th:text="${list.getName()}"></a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                <span class="help-block"></span>
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                <div class="btn-group open" id="copyright_add_input_parent">
+                                                                    <input style="width: 70px; float: left;" name="copyright" class="form-control" type="text" id="copyright_add_input">
+                                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        <span class="caret"></span>
+                                                                        <span class="sr-only">切换下拉列表</span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu">
+                                                                        <li><a class="dropdown_copyright">原创</a></li>
+                                                                        <li><a class="dropdown_copyright">转载</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                                <span class="help-block"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <h5>图片路径</h5>
+                                                            <input type="file" id="add_file" name="file"><br/>
+                                                            <a class="btn btn-warning" id="add_upload_file">上传</a>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div style="width: 150px; height: 150px; overflow: hidden;">
+                                                                <img style="max-width: 100%;" id="img_add_input" alt="未上传图片">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <h5>简介</h5>
+                                                    <textarea id="description_add_textarea" name="description" cols="63" rows="10"></textarea>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                                <button type="submit" class="btn btn-primary" id="add-btn">点击保存</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav th:if="${article.total > 10}" style="text-align: center;">
+                <ul class="pagination no-border" th:if="${con_href == 'adminArticle'}">
+                    <li th:class="${article.hasPreviousPage ? '':'new-disable'}">
+                        <a th:href="@{${con_href}(id=1)}">
+                            <span>&laquo;</span>
+                        </a>
+                    </li>
+                  <li th:class="${article.hasPreviousPage ? '':'new-disable'}">
+                    <a th:href="@{${con_href}(id=${article.getPrePage()})}">
+                      <span><i class="mdi mdi-chevron-left"></i></span>
+                    </a>
+                  </li>
+                  <li th:each="list:${article.getNavigatepageNums()}" th:class="${list == article.pageNum ? 'active':''}">
+                      <a class="page-btn" th:href="@{${con_href}(id=${list})}" th:text="${list}"></a>
+                  </li>
+                  <li th:class="${article.hasNextPage ? '':'new-disable'}">
+                    <a th:href="@{${con_href}(id=${article.getNextPage()})}">
+                      <span><i class="mdi mdi-chevron-right"></i></span>
+                    </a>
+                  </li>
+                  <li th:class="${article.hasNextPage ? '':'new-disable'}">
+                    <a th:href="@{${con_href}(id=${article.getNavigateLastPage()})}">
+                        <span>&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+
+                <ul class="pagination no-border" th:if="${con_href == 'adminArticleSearch'}">
+                    <li th:class="${article.hasPreviousPage ? '':'new-disable'}">
+                        <a th:href="@{${con_href}(id=1,title=${con_title})}">
+                            <span>&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:class="${article.hasPreviousPage ? '':'new-disable'}">
+                        <a th:href="@{${con_href}(id=${article.getPrePage()},title=${con_title})}">
+                            <span><i class="mdi mdi-chevron-left"></i></span>
+                        </a>
+                    </li>
+                    <li th:each="list:${article.getNavigatepageNums()}" th:class="${list == article.pageNum ? 'active':''}">
+                        <a class="page-btn" th:href="@{${con_href}(id=${list},title=${con_title})}" th:text="${list}"></a>
+                    </li>
+                    <li th:class="${article.hasNextPage ? '':'new-disable'}">
+                        <a th:href="@{${con_href}(id=${article.getNextPage()},title=${con_title})}">
+                            <span><i class="mdi mdi-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li th:class="${article.hasNextPage ? '':'new-disable'}">
+                        <a th:href="@{${con_href}(id=${article.getNavigateLastPage()},title=${con_title})}">
+                            <span>&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+              </nav>
+        </div>
+      <div id="this_pageNum" style="display: none;" th:attr="this_pageNum_attr=${article.getPageNum()}"></div>
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+<script type="text/javascript" src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js" th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script type="text/javascript" src="js/lightyear.js" th:src="@{/js/lightyear.js}"></script>
+<script type="text/javascript" src="js/jconfirm/jquery-confirm.min.js" th:src="@{/js/jconfirm/jquery-confirm.min.js}"></script>
+<script type="text/javascript" src="js/jquery.cookie.js" th:src="@{/js/jquery.cookie.js}"></script>
+<script type="text/javascript" src="js/main.min.js" th:src="@{/js/main.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap-notify.min.js" th:src="@{/js/bootstrap-notify.min.js}"></script>
+<script>
+    $(document).on('click','#search-btn',function(){
+         let text = $('#idSearch').val()
+        location.href = "adminArticleSearch?id=" + 1 + "&title=" + text;
+    });
+
+    //编辑基本信息
+    $(document).on('click','#edit-base',function(){
+        reset_form("#myModal form");
+        getArticleInfo($(this).attr('edit-base-id'));
+        $('#edit_id_input').attr('edit-base-id', $(this).attr('edit-base-id'));
+        $('#myModal').modal({
+            backdrop: "static"
+        });
+    });
+
+    //新建基本信息
+    $(document).on('click','#add-base',function(){
+        reset_form("#myModal2 form");
+        $('#myModal2').modal({
+            backdrop: "static"
+        });
+    });
+
+    $(document).on('click','#save-btn',function(){
+        clean_form("#myModal form");
+        let title = $("#title_edit_input").val();
+        let author = $("#author_edit_input").val();
+        let rusername = $("#edit_author_username").val();
+        let img = $("#img_edit_input").attr("src");
+        let tagsId = $('#tags_id_edit_input').val();
+        let tagsName = $("#tags_edit_input").val();
+        let categoryId = $('#category_id_edit_input').val();
+        let categoryName = $("#category_edit_input").val();
+        let copyright = $("#copyright_edit_input").val();
+        let description = $("#description_edit_textarea").val();
+        if (title === null || title === '') {
+            show_validate_msg("#title_edit_input",
+                "error", "标题为空");
+            return false;
+        }
+        if (author === null || author === '') {
+            show_validate_msg("#author_edit_input",
+                "error", "作者为空");
+            return false;
+        }
+        if (tagsName === null || tagsName === '') {
+            show_validate_msg("#tags_edit_input_parent",
+                "error", "标签为空");
+            return false;
+        }
+        if (categoryName === null || categoryName === '') {
+            show_validate_msg("#category_edit_input_parent",
+                "error", "分类为空");
+            return false;
+        }
+        if (copyright === null || copyright === '') {
+            show_validate_msg("#copyright_edit_input_parent",
+                "error", "出处为空");
+            return false;
+        }
+        if (description === null || description === '') {
+            show_validate_msg("#description_edit_textarea",
+                "error", "描述为空");
+            return false;
+        }
+        var json = {
+            "title" : title,
+            "author" : author,
+            "rusername" : rusername,
+            "img" : img,
+            "copyright" : copyright,
+            "description" : description,
+            "tags" : {
+                "id" : tagsId,
+                "name" : tagsName
+            },
+            "category" : {
+                "id" : categoryId,
+                "name" : categoryName
+            }
+        }
+        $.ajax({
+            url: "updateArticleById/" + $('#edit_id_input').attr('edit-base-id'),
+            type: "POST",
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(json),
+            success: function (result) {
+                if (result.code == 200) {
+                    $("#myModal").modal('hide');
+                    lightyear.notify('信息修改成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    setTimeout(function () {
+                        let pageNum = $('#this_pageNum').attr('this_pageNum_attr')
+                        location.href = "adminArticle?id=" + pageNum;
+                    }, 1000);
+                } else {
+                    lightyear.notify('信息修改失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                }
+            }
+        });
+    });
+
+    $('#upload_file').click(function() {
+        var formData = new FormData();
+        formData.append('file', $('#file')[0].files[0])
+
+        $.ajax({
+            url: "uploadArticleImg",
+            type: "POST",
+            data: formData,
+            contentType:false,
+            processData:false,//这个很有必要，不然不行
+            dataType:"json",
+            mimeType:"multipart/form-data",
+            success:function(data){
+                if(200==data.code){
+                    $('#img_edit_input').attr("src",data.realpath)
+                }else{
+                    alert("失败")
+                }
+            }
+        })
+    })
+
+    $('#add_upload_file').click(function() {
+        var formData = new FormData();
+        formData.append('file', $('#add_file')[0].files[0])
+
+        $.ajax({
+            url: "uploadArticleImg",
+            type: "POST",
+            data: formData,
+            contentType:false,
+            processData:false,//这个很有必要，不然不行
+            dataType:"json",
+            mimeType:"multipart/form-data",
+            success:function(data){
+                if(200==data.code){
+                    $('#img_add_input').attr("src",data.realpath)
+                }else{
+                    alert("失败")
+                }
+            }
+        })
+    })
+
+    $(document).on('click','#delete-btn',function(){
+        let deleteId = $(this).attr('delete-id')
+        let deleteName = $(this).attr('delete-name')
+        $.alert({
+            title: '提示',
+            content: '确定删除文章 <strong>'+ deleteName + '</strong> 吗？',
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    action: function (){
+                        $.ajax({
+                            url: 'deleteContent?id=' + deleteId,
+                            type: 'GET',
+                            success: function (result) {
+                                if (result.code == 200) {
+                                    lightyear.notify('删除成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                                    setTimeout(function () {
+                                        let pageNum = $('#this_pageNum').attr('this_pageNum_attr')
+                                        location.href = "adminArticle?id=" + pageNum;
+                                    }, 1000);
+                                } else {
+                                    lightyear.notify('删除失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                                }
+                            }
+                        });
+                    }
+                },
+                cancel: {
+                    text: '取消',
+                    action: function () {
+                        $.alert('已取消!');
+                    }
+                }
+            }
+        })
+    });
+    /*
+    * 新建文章
+    * */
+    $(document).on('click','#add-btn',function(){
+        clean_form("#myModal2 form");
+        let title = $("#title_add_input").val();
+        let author = $("#author_add_input").val();
+        let rusername = $("#add_author_username").val();
+        let img = $("#img_add_input").attr("src");
+        let tagsId = $('#tags_id_add_input').val();
+        let tagsName = $("#tags_add_input").val();
+        let categoryId = $('#category_id_add_input').val();
+        let categoryName = $("#category_add_input").val();
+        let copyright = $("#copyright_add_input").val();
+        let description = $("#description_add_textarea").val();
+        if (title === null || title === '') {
+            show_validate_msg("#title_add_input",
+                "error", "标题为空");
+            return false;
+        }
+        if (author === null || author === '') {
+            show_validate_msg("#author_add_input",
+                "error", "作者为空");
+            return false;
+        }
+        if (tagsName === null || tagsName === '') {
+            show_validate_msg("#tags_add_input_parent",
+                "error", "标签为空");
+            return false;
+        }
+        if (categoryName === null || categoryName === '') {
+            show_validate_msg("#category_add_input_parent",
+                "error", "分类为空");
+            return false;
+        }
+        if (copyright === null || copyright === '') {
+            show_validate_msg("#copyright_add_input_parent",
+                "error", "出处为空");
+            return false;
+        }
+        if (description === null || description === '') {
+            show_validate_msg("#description_add_textarea",
+                "error", "描述为空");
+            return false;
+        }
+        var json = {
+            "title" : title,
+            "author" : author,
+            "rusername" : rusername,
+            "img" : img,
+            "copyright" : copyright,
+            "description" : description,
+            "tags" : {
+                "id" : tagsId,
+                "name" : tagsName
+            },
+            "category" : {
+                "id" : categoryId,
+                "name" : categoryName
+            }
+        }
+        $.ajax({
+            url: "addArticle",
+            type: "POST",
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify(json),
+            success: function (result) {
+                if (result.code == 200) {
+                    $("#myModal").modal('hide');
+                    lightyear.notify('文章新建成功', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                    setTimeout(function () {
+                        let pageNum = $('#this_pageNum').attr('this_pageNum_attr')
+                        location.href = "adminArticle?id=" + pageNum;
+                    }, 1000);
+                } else {
+                    lightyear.notify('文章新建失败', 'success', 3000,'mdi mdi-emoticon-happy', 'top', 'center');
+                }
+            }
+        });
+    });
+    //修改模态框标签下拉菜单内的点击事件
+    $('.dropdown_tags').click(function () {
+        $('#tags_edit_input').val($(this).attr('dropdown_tags_name'));
+        $('#tags_id_edit_input').val($(this).attr('dropdown_tags_id'));
+    });
+    //修改模态框分类下拉菜单内的点击事件
+    $('.dropdown_category').click(function () {
+        $('#category_edit_input').val($(this).attr('dropdown_category_name'));
+        $('#category_id_edit_input').val($(this).attr('dropdown_category_id'))
+    });
+    //修改模态框版权下拉菜单内的点击事件
+    $('.dropdown_copyright').click(function () {
+        $('#copyright_edit_input').val($(this).text());
+    });
+    //新建模态框标签下拉菜单内的点击事件
+    $('.dropdown_tags').click(function () {
+        $('#tags_add_input').val($(this).attr('dropdown_tags_name'));
+        $('#tags_id_add_input').val($(this).attr('dropdown_tags_id'));
+    });
+    //新建模态框分类下拉菜单内的点击事件
+    $('.dropdown_category').click(function () {
+        $('#category_add_input').val($(this).attr('dropdown_category_name'));
+        $('#category_id_add_input').val($(this).attr('dropdown_category_id'))
+    });
+    //新建模态框版权下拉菜单内的点击事件
+    $('.dropdown_copyright').click(function () {
+        $('#copyright_add_input').val($(this).text());
+    });
+    //根据id查出用户信息并显示
+    function getArticleInfo(id) {
+        $.ajax({
+            url: "adminArticleById?id=" + id,
+            type: "GET",
+            success: function (result) {
+                //显示数据之前先清除一下校验样式，如果有的话
+                reset_form("#myModal form");
+                if (result.title != null) $("#title_edit_input").val(result.title);
+                if (result.author != null) $("#author_edit_input").val(result.author);
+                if (result.rusername != null) $("#edit_author_username").val(result.rusername);
+                if (result.img != null) $("#img_edit_input").attr("src",result.img)
+                if (result.tags != null) $("#tags_edit_input").val(result.tags.name);
+                if (result.category != null) $("#category_edit_input").val(result.category.name);
+                if (result.copyright != null) $("#copyright_edit_input").val(result.copyright);
+                if (result.description != null) $("#description_edit_textarea").val(result.description);
+
+                if (result.tags != null) $("#tags_id_edit_input").val(result.tags.id);
+                if (result.category != null) $("#category_id_edit_input").val(result.category.id);
+
+            }
+        });
+    }
+    //清空表单样式及内容
+    function reset_form(ele) {
+        $(ele)[0].reset();
+        //清空表单样式
+        $(ele).find("*").removeClass("has-error has-success");
+        $(ele).find(".help-block").text("");
+    }
+    //清空表单样式
+    function clean_form(ele) {
+        //清空表单样式
+        $(ele).find("*").removeClass("has-error has-success");
+        $(ele).find(".help-block").text("");
+    }
+    //显示校验结果的提示信息
+    function show_validate_msg(ele, status, msg) {
+        //清除当前元素的校验状态
+        $(ele).parent().removeClass("has-success has-error");
+        $(ele).next("span").text("");
+        if ("success" === status) {
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        } else if ("error" === status) {
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+</script>
+
+</body>
+</html>

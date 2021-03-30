@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <div class="top_bar" th:fragment="top_bar (root,count,classify)">
+        <img class="top_img" th:src="${root.getImg()}" alt="" />
+        <div class="message_min">
+            <span th:text="${root.getName()}"></span><br/>
+            <span th:text="${root.getMessage()}"></span>
+        </div>
+        <div class="text_box">
+            <a th:href="index">
+                <div>
+                    <p th:text="${count.articleCount}"></p>
+                    <p>文章</p>
+                </div>
+            </a>
+            <a th:href="@{categoriesPage(id=${category.get(0).getId()},page=1)}">
+                <div>
+                    <p th:text="${count.categoryCount}"></p>
+                    <p>类别</p>
+                </div>
+            </a>
+            <a th:href="tags">
+                <div>
+                    <p th:text="${count.tagsCount}"></p>
+                    <p>标签</p>
+                </div>
+            </a>
+        </div>
+        <input class="input_checkbox" type="checkbox" name="" id="check">
+        <label class="btn_label" id="btn" for="check"><i class="iconfont iconguanwang30icon24"></i></label>
+        <div class="a_box">
+            <ul>
+                <a href="#" th:href="index" th:class="${classify=='home'?'active':''}"><li>首页</li></a>
+                <a href="#" th:href="tags" th:class="${classify=='tags'?'active':''}"><li>标签</li></a>
+                <a href="#" th:href="@{categoriesPage(id=${category.get(0).getId()},page=1)}" th:class="${classify=='categories'?'active':''}"><li>类别</li></a>
+                <a href="#" th:href="timeline" th:class="${classify=='timeline'?'active':''}"><li>档案</li></a>
+<!--                <a href="#" th:href="team" th:class="${classify=='team'?'active':''}"><li>团队</li></a>-->
+                <a href="#" th:href="about" th:class="${classify=='about'?'active':''}"><li>关于</li></a>
+                <a href="#" th:href="@{adminIndex}"  target="_blank"><li>管理</li></a>
+            </ul>
+        </div>
+    </div>
+    <!-- 侧边栏 -->
+    <div class="sidebar" th:fragment="sidebar (root,count,classify)">
+        <div class="box_out">
+            <div class="sidebar_box_1">
+                <img class="image_i" th:src="${root.getImg()}" alt="">
+                <p class="name" th:text="${root.getName()}">Web Blog</p>
+                <p class="message" th:text="${root.getMessage()}">
+                    Only the harvest，to test the significance of the work；only the contribution，the value of the square can be measured。
+                </p>
+            </div>
+
+            <div class="sidebar_box_2">
+                <a href="" th:href="index">
+                    <div class="wrapper_118X1">
+                        <p class="text_268X1" th:text="${count.articleCount}">12</p>
+                        <p class="text_269X1">文章</p>
+                    </div>
+                </a>
+                <a href="" th:href="@{categoriesPage(id=${category.get(0).getId()},page=1)}">
+                    <div class="wrapper_118X1">
+                        <p class="text_268X1" th:text="${count.categoryCount}">123</p>
+                        <p class="text_269X1">类别</p>
+                    </div>
+                </a>
+                <a href="" th:href="tags">
+                    <div class="wrapper_118X1">
+                        <p class="text_268X1" th:text="${count.tagsCount}">88</p>
+                        <p class="text_269X1">标签</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="text_280">
+                <div class="text_282X1" th:class="${classify=='home'?'text_282X1 active':'text_282X1'}">
+                    <a href="#" th:href="index">首页</a>
+                    <div class="box_283X1" th:class="${classify=='home'?'box_283X1':'box_283X2'}"></div>
+                </div>
+                <div class="text_282X1" th:class="${classify=='tags'?'text_282X1 active':'text_282X1'}">
+                    <a href="#" th:href="tags">标签</a>
+                    <div class="box_283X2" th:class="${classify=='tags'?'box_283X1':'box_283X2'}"></div>
+                </div>
+                <div class="text_282X1" th:class="${classify=='categories'?'text_282X1 active':'text_282X1'}">
+                    <a href="#" th:href="@{categoriesPage(id=${category.get(0).getId()},page=1)}">类别</a>
+                    <div class="box_283X2" th:class="${classify=='categories'?'box_283X1':'box_283X2'}"></div>
+                </div>
+                <div class="text_282X1" th:class="${classify=='timeline'?'text_282X1 active':'text_282X1'}">
+                    <a href="#" th:href="timeline">档案</a>
+                    <div class="box_283X2" th:class="${classify=='timeline'?'box_283X1':'box_283X2'}"></div>
+                </div>
+<!--                <div class="text_282X1" th:class="${classify=='team'?'text_282X1 active':'text_282X1'}">-->
+<!--                    <a href="#"th:href="team">团队</a>-->
+<!--                    <div class="box_283X2" th:class="${classify=='team'?'box_283X1':'box_283X2'}"></div>-->
+<!--                </div>-->
+                <div class="text_282X1" th:class="${classify=='about'?'text_282X1 active':'text_282X1'}">
+                    <a href="#" th:href="about">关于</a>
+                    <div class="box_283X2" th:class="${classify=='about'?'box_283X1':'box_283X2'}"></div>
+                </div>
+                <div class="text_282X1">
+                    <a href="javascript:void(0)" target="_blank" th:href="@{adminIndex}">管理</a>
+                    <div class="box_283X2"></div>
+                </div>
+            </div>
+
+            <div class="sidefoot">
+                <div>
+                    <a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=ttLE09fbxdvD9sfHmNXZ2w" target="_blank"><i class="iconfont iconyouxiang"></i></a>
+                    <a href="javascript:void(0)"><i class="iconfont icongithub"></i></a>
+                    <a href="javascript:void(0)"><i class="iconfont iconweixin"></i></a>
+                    <a href="javascript:void(0)"><i class="iconfont iconqq"></i></a>
+                </div>
+                <p>Copyright © 2020 DreamsMu All Rights Reserved V.1.0.0</p>
+            </div>
+        </div>
+    </div>
+    <!-- 分页栏 -->
+    <div class="ipage box_right" th:if="${article.total} > 3" th:fragment="ipage (article,classify)">
+        <ul class="ipagination">
+            <a href="#" th:class="${article.hasPreviousPage?'':'no-click'}" th:href="@{${classify}(pageNum=1)}"><li><i class="iconfont icondajiantou-zuo"></i></li></a>
+            <a href="#" th:class="${article.hasPreviousPage?'':'no-click'}" th:href="@{${classify}(pageNum=${article.prePage})}"><li><i class="iconfont iconjiantou-zuo"></i></li></a>
+            <span th:each="num:${article.navigatepageNums}">
+                <a href="#" th:href="@{${classify}(pageNum=${num})}"><li class="iactive" th:class="${article.pageNum==num?'iactive':''}" th:text="${num}">1</li></a>
+            </span>
+            <a href="#" th:class="${article.hasNextPage?'':'no-click'}" th:href="@{${classify}(pageNum=${article.nextPage})}"><li><i class="iconfont iconjiantou"></i></li></a>
+            <a href="#" th:class="${article.hasNextPage?'':'no-click'}" th:href="@{${classify}(pageNum=${article.pages})}"><li><i class="iconfont icondajiantou-you"></i></li></a>
+        </ul>
+    </div>
+    <!-- 底部栏 -->
+    <div class="foot box_right" th:fragment="foot">
+        <div>
+            <a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=ttLE09fbxdvD9sfHmNXZ2w" target="_blank"><i class="iconfont iconyouxiang"></i></a>
+            <a href="javascript:void(0)"><i class="iconfont icongithub"></i></a>
+            <a href="javascript:void(0)"><i class="iconfont iconweixin"></i></a>
+            <a href="javascript:void(0)"><i class="iconfont iconqq"></i></a>
+        </div>
+        <p>Copyright © 2020 DreamsMu All Rights Reserved V.1.0.0</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1955832_wddaod38mne.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.png">
+</head>
+<body>
+    <div>
+        <!-- 顶部栏 -->
+        <div th:replace="views/commons/component :: top_bar (${root},${count},'home')"></div>
+        <!-- 侧边栏 -->
+        <div th:replace="views/commons/component :: sidebar (${root},${count},'home')"></div>
+        <!-- 信息栏 -->
+        <div class="box_right">
+            <div class="box_732X1"  th:each="list:${article.list}">
+                <div class="image_96X1">
+                    <img th:src="${list.getImg()}" alt="">
+                </div>
+                <div class="text_730">
+                    <h1 class="text_731X1"><a th:href="@{article(id=${list.getId()})}" th:text="${list.getTitle()}"></a></h1>
+                    <p class="text_730X1" th:text="${list.getDescription()}"></p>
+                    <div class="text_740">
+                        <div class="image_95X1" style="text-align: center">
+                            <img th:src="${root.getImg()}" alt="">
+                        </div>
+                        <span class="text_725X1" th:text="${list.getAuthor()}"></span>
+                        <span class="text_725X1" th:text="${list.getCopyright()}" style="color: #e33c64;"></span>
+                        <span class="text_725X1" style="color: rgba(255, 141, 26, 1);"><span th:text="${list.getTraffic()}"></span></span>
+                        <span class="text_725X1" th:if="${list?.getTags()?.getName()} != null" th:text="${list?.getTags()?.getName()}" style="color: rgba(67, 207, 124, 1);"></span>
+                        <span class="text_725X1" th:text="${#dates.format(list.getTime(), 'yyyy-MM-dd')}" style="color: rgba(121, 72, 234, 1);"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 分页栏 -->
+        <div th:replace="views/commons/component :: ipage (${article},'home')"></div>
+        <!-- 底部栏 -->
+        <div th:replace="views/commons/component :: foot"></div>
+
+        <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+        <script src="js/script.js" th:src="@{/js/script.js}"></script>
+    </div>
+</body>
+</html>
