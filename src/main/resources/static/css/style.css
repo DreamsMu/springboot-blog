@@ -45,8 +45,10 @@ a:hover {text-decoration: none;}
 ============================ 侧边栏 ============================
 */
 .sidebar {
-	float: left;
-	/* border: 1px solid red; */
+	position: fixed;
+	height: 100vh;
+	/*float: left;*/
+	/*border: 1px solid red;*/
 }
 .top_bar {
 	display: none;
@@ -169,7 +171,7 @@ a:hover {text-decoration: none;}
 }
 
 .sidefoot {
-	position: absolute;
+	position: relative;
 	bottom: 0;
 	max-width: 100%;
 }
@@ -197,7 +199,8 @@ a:hover {text-decoration: none;}
 ============================ 首页信息 ============================
 */
 .box_right {
-	float: left;
+	float: right;
+	margin-right: 16px;
 	width: 1599px;
 }
 
@@ -638,6 +641,7 @@ a:hover {text-decoration: none;}
 		height: auto;
 		max-height: 102px;
 		font-size: 14px;
+		text-align: center;
 	}
 	.text_740 {
 		text-align: center;
